@@ -139,6 +139,7 @@ services:
     image: ???
     volumes:
       - "${defines.drivers}:/mnt/drivers"
+      - "${repo-relative:plugins}:/repo/plugins"
       - "${wizard.log_dir}:/mnt/output" # optional output like the debug images
       - "${repo-relative:'src'}:/repo/src"
       - "${oc.env:HF_HOME,${oc.env:HOME}/.cache/huggingface}:/root/.cache/huggingface"

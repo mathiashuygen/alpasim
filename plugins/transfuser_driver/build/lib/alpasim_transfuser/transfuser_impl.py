@@ -749,7 +749,7 @@ WAYMO_E2E_REAL_DATA_JPEG_LEVEL = (
 
 @beartype
 def normalize_imagenet(
-    x: jt.Float[torch.Tensor, "B 3 H W"],
+    x: jt.Float[torch.Tensor, "B 3 H W"]
 ) -> jt.Float[torch.Tensor, "B 3 H W"]:
     """Normalize input images according to ImageNet standards.
     Args:
@@ -1481,7 +1481,7 @@ class TrainingConfig(BaseConfig):
     @property
     def torch_float_type(self):
         """PyTorch float precision type for training."""
-        if self.use_mixed_precision_training and self.gpu_name in ["a100", "l40s, "]:
+        if self.use_mixed_precision_training and self.gpu_name in ["a100", "l40s"]:
             return torch.bfloat16
         return torch.float32
 
@@ -2267,8 +2267,6 @@ class TrainingConfig(BaseConfig):
                 return "a4000"
             elif "rtx 6000" in name and "ada" in name:
                 return "rtx6000ada"
-            elif "4070 ti" in name:
-                return "rtx4070ti"
             else:
                 raise Exception(f"Unknown GPU name: {name}")
         except RuntimeError:

@@ -32,3 +32,30 @@ asset_harvesting/
 # which does not require uv.lock.
 **/uv.lock
 .worktrees/
+
+
+huggingFaceToken 
+
+data.scenes/.~lock*
+plugins/transfuer_driver/build/
+src/wizard/tutorial/
+src/wizard/tutorial_transfuser/
+tutorial_transfuser/
+
+# Large generated files
+*.usdz
+*.mp4
+*.avi
+*.mkv
+*.pt
+*.pth
+
+
+**/rollouts/
+**/telemetry/
+**/txt-logs/
+**/metrics_plot.png
+**/tutorial/
+**/tutorial_transfuser/
+data/nre-artifacts/
+data/drivers/

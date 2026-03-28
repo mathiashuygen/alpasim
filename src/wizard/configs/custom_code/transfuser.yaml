@@ -1,0 +1,5 @@
+# @package _global_
+services:
+  driver:
+    volumes:
+      - "${repo-relative:plugins}:/repo/plugins"
