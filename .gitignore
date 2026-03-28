@@ -51,6 +51,3 @@ plugins/transfuer_driver/build/
 **/telemetry/
 **/txt-logs/
 **/metrics_plot.png
-**/tutorial/
-data/nre-artifacts/
-data/drivers/
