@@ -38,10 +38,6 @@ huggingFaceToken
 
 data.scenes/.~lock*
 plugins/transfuer_driver/build/
-src/wizard/tutorial/
-src/wizard/tutorial_transfuser/
-tutorial_transfuser/
-
 # Large generated files
 *.usdz
 *.mp4
@@ -56,6 +52,5 @@ tutorial_transfuser/
 **/txt-logs/
 **/metrics_plot.png
 **/tutorial/
-**/tutorial_transfuser/
 data/nre-artifacts/
 data/drivers/

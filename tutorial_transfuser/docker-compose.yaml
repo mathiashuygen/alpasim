@@ -1,0 +1,141 @@
+networks:
+  microservices_network:
+    driver: bridge
+services:
+  controller-0:
+    build:
+      context: /home/muut/Documents/research/nvidiaAuto/alpasim
+      dockerfile: Dockerfile
+      tags:
+        - alpasim-base:0.1.4
+    command:
+      - -c
+      - |-
+        umask 0000
+        uv run python -m alpasim_controller.server --port=6003 --log_dir=/mnt/output --log-level=INFO
+    entrypoint: bash
+    image: alpasim-base:0.1.4
+    networks:
+      - microservices_network
+    pull_policy: missing
+    volumes:
+      - //home/muut/Documents/research/nvidiaAuto/alpasim/tutorial_transfuser/controller:/mnt/output
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/src:/repo/src
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/plugins:/repo/plugins
+  driver-0:
+    build:
+      context: /home/muut/Documents/research/nvidiaAuto/alpasim
+      dockerfile: Dockerfile
+      tags:
+        - alpasim-base:0.1.4
+    command:
+      - -c
+      - |-
+        umask 0000
+        uv run -m alpasim_driver.main --config-path=/mnt/output --config-name=driver-config.yaml host=0.0.0.0 port=6000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities:
+                - gpu
+              device_ids:
+                - '0'
+              driver: nvidia
+    entrypoint: bash
+    image: alpasim-base:0.1.4
+    networks:
+      - microservices_network
+    pull_policy: missing
+    volumes:
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/data/drivers:/mnt/drivers
+      - //home/muut/Documents/research/nvidiaAuto/alpasim/tutorial_transfuser:/mnt/output
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/src:/repo/src
+      - /home/muut/.cache/huggingface:/root/.cache/huggingface
+  physics-0:
+    build:
+      context: /home/muut/Documents/research/nvidiaAuto/alpasim
+      dockerfile: Dockerfile
+      tags:
+        - alpasim-base:0.1.4
+    command:
+      - -c
+      - |-
+        umask 0000
+        uv run physics_server --host=0.0.0.0 --port=6002 --artifact-glob=/mnt/nre-data/scenesets/5f252ba230a9da476c64c7b8d0604af7/**/*.usdz --use-ground-mesh=true --cache-size=16 --log-level=INFO
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities:
+                - gpu
+              device_ids:
+                - '0'
+              driver: nvidia
+    entrypoint: bash
+    environment:
+      - WARP_CACHE_PATH='/mnt/warp'
+    image: alpasim-base:0.1.4
+    networks:
+      - microservices_network
+    pull_policy: missing
+    volumes:
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/data/nre-artifacts:/mnt/nre-data
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/src:/repo/src
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/plugins:/repo/plugins
+  runtime-0:
+    build:
+      context: /home/muut/Documents/research/nvidiaAuto/alpasim
+      dockerfile: Dockerfile
+      tags:
+        - alpasim-base:0.1.4
+    command:
+      - -c
+      - |-
+        umask 0000
+        uv run python -m alpasim_runtime.simulate --usdz-glob=/mnt/nre-data/scenesets/5f252ba230a9da476c64c7b8d0604af7/**/*.usdz --user-config=/mnt/log_dir/generated-user-config-0.yaml --network-config=/mnt/log_dir/generated-network-config.yaml --log-dir=/mnt/log_dir --log-level=INFO --array-job-dir=/mnt/array_job_dir --eval-config=/mnt/log_dir/eval-config.yaml
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities:
+                - gpu
+              count: all
+              driver: nvidia
+    entrypoint: bash
+    image: alpasim-base:0.1.4
+    networks:
+      - microservices_network
+    pid: host
+    pull_policy: missing
+    volumes:
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/data/nre-artifacts:/mnt/nre-data
+      - //home/muut/Documents/research/nvidiaAuto/alpasim/tutorial_transfuser:/mnt/log_dir
+      - //home/muut/Documents/research/nvidiaAuto/alpasim/tutorial_transfuser:/mnt/array_job_dir
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/src:/repo/src
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/plugins:/repo/plugins
+  sensorsim-0:
+    command:
+      - -c
+      - |-
+        umask 0000
+        /app/pycena_run.runfiles/nre_repo/scripts/pycena/runtime/entrypoint_3_11.sh --port=6001 --host=0.0.0.0 --artifact-glob=/mnt/nre-data/scenesets/5f252ba230a9da476c64c7b8d0604af7/**/*.usdz --egocar-hood-dir=/mnt/ego-hoods --no-enable-nrend --download-cache-dir /tmp/nre-cache-dir --cache-size=4
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities:
+                - gpu
+              device_ids:
+                - '0'
+              driver: nvidia
+    entrypoint: bash
+    environment:
+      - OMP_NUM_THREADS=1
+    image: docker.io/carlasimulator/nvidia-nurec-grpc:0.2.0
+    networks:
+      - microservices_network
+    pull_policy: missing
+    volumes:
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/data/nre-artifacts:/mnt/nre-data
+      - /home/muut/Documents/research/nvidiaAuto/alpasim/data/nre-artifacts/ego-hoods:/mnt/ego-hoods

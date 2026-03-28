@@ -1,0 +1,10 @@
+description: unspecified
+run_args: unknownArgs
+run_dir: //home/muut/Documents/research/nvidiaAuto/alpasim/src/wizard
+run_name: LR-5405e3d6-1446-4049-b8d1-573ad435edb0
+run_time: '2026-03-28 13:23:08'
+run_user: muut
+run_uuid: 5405e3d6-1446-4049-b8d1-573ad435edb0
+slurm_job_id: 0
+submitter: unspecified
+test_suite_id: null
